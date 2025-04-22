@@ -1,0 +1,76 @@
+version: "3.9"
+
+services:
+  db:
+    image: postgres:17
+    container_name: postgres_db
+    restart: always
+    environment:
+      POSTGRES_USER: minhhn
+      POSTGRES_PASSWORD: secret
+      POSTGRES_DB: oncogenomics
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    networks:
+      - oncogenomics_net
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U minhhn"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+
+  gatk-pipeline:
+    build: ./docker/gatk
+    container_name: gatk_runner
+    volumes:
+      - ./data/references:/data/references
+      - ./data/inputs:/data/inputs
+      - ./data/outputs:/data/outputs
+    networks:
+      - oncogenomics_net
+    depends_on:
+      db:
+        condition: service_healthy
+    environment:
+      - REFERENCE_PATH=/data/references/GRCh38.fa
+      - DBSNP_PATH=/data/references/dbsnp.vcf.gz
+    healthcheck:
+      test: [ "CMD", "gatk", "--version" ]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: oncology_app
+    ports:
+      - "8080:8080"
+    depends_on:
+      db:
+        condition: service_healthy
+      gatk-pipeline:
+        condition: service_healthy
+    environment:
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://db:5432/oncogenomics
+      - SPRING_DATASOURCE_USERNAME=minhhn
+      - SPRING_DATASOURCE_PASSWORD=secret
+      - APP_GATK_INPUT_DIR=/data/inputs
+      - APP_GATK_OUTPUT_DIR=/data/outputs
+      - APP_GATK_REFERENCE_PATH=/data/references/GRCh38.fa
+    volumes:
+      - ./data/inputs:/data/inputs
+      - ./data/outputs:/data/outputs
+      - ./data/references:/data/references
+    networks:
+      - oncogenomics_net
+
+volumes:
+  postgres_data:
+
+networks:
+  oncogenomics_net:
+    driver: bridge
