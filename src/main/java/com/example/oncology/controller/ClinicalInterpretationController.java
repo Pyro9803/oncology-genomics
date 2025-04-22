@@ -14,7 +14,7 @@ import java.util.List;
  * REST controller for clinical interpretation operations
  */
 @RestController
-@RequestMapping("/api/clinical")
+@RequestMapping("/clinical")
 @RequiredArgsConstructor
 public class ClinicalInterpretationController {
 

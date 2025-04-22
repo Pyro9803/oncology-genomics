@@ -1,5 +1,6 @@
 package com.example.oncology.entity;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import lombok.Data;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
@@ -22,6 +23,7 @@ public class SomaticVariant {
     
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "variant_calling_id", nullable = false)
+    @JsonBackReference
     private VariantCalling variantCalling;
     
     @Column(name = "chromosome", nullable = false)
@@ -51,7 +53,7 @@ public class SomaticVariant {
     @Column(name = "hgvs_p")
     private String hgvsP;
     
-    @Column(name = "allele_frequency", precision = 10, scale = 5)
+    @Column(name = "allele_frequency", columnDefinition = "NUMERIC(10,5)")
     private BigDecimal alleleFrequency;
     
     @Column(name = "read_depth")

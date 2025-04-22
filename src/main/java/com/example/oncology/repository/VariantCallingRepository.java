@@ -14,6 +14,8 @@ public interface VariantCallingRepository extends JpaRepository<VariantCalling, 
     
     List<VariantCalling> findByNormalSampleSampleId(Long sampleId);
     
+    List<VariantCalling> findByTumorSample(com.example.oncology.entity.Sample tumorSample);
+    
     List<VariantCalling> findByStatus(String status);
     
     List<VariantCalling> findByCallingMethod(String callingMethod);

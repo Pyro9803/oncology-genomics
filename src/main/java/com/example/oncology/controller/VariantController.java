@@ -15,7 +15,7 @@ import java.util.List;
  * REST controller for variant operations
  */
 @RestController
-@RequestMapping("/api/variants")
+@RequestMapping("/variants")
 @RequiredArgsConstructor
 public class VariantController {
 
@@ -133,5 +133,22 @@ public class VariantController {
         } catch (Exception e) {
             return ResponseEntity.badRequest().body("Error: " + e.getMessage());
         }
+    }
+    
+    /**
+     * Create a new somatic variant for a variant calling
+     */
+    @PostMapping("/variant-calling/{variantCallingId}")
+    public ResponseEntity<SomaticVariant> createVariant(
+            @PathVariable Long variantCallingId,
+            @RequestBody SomaticVariant variant) {
+        
+        return variantCallingRepository.findById(variantCallingId)
+                .map(variantCalling -> {
+                    variant.setVariantCalling(variantCalling);
+                    SomaticVariant savedVariant = somaticVariantRepository.save(variant);
+                    return ResponseEntity.ok(savedVariant);
+                })
+                .orElse(ResponseEntity.notFound().build());
     }
 }

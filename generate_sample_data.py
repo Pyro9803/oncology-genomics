@@ -18,7 +18,7 @@ import argparse
 fake = Faker()
 
 # Configuration
-BASE_URL = "http://localhost:8080"
+BASE_URL = "http://localhost:8080/oncology/api"
 TIMEOUT = 10  # seconds
 
 # Cancer types with appropriate staging

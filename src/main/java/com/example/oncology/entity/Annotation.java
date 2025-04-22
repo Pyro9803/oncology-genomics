@@ -52,7 +52,7 @@ public class Annotation {
     @Column(name = "cosmic_id")
     private String cosmicId;
     
-    @Column(name = "gnomad_af", precision = 10, scale = 9)
+    @Column(name = "gnomad_af", columnDefinition = "NUMERIC(10,9)")
     private BigDecimal gnomadAf;
     
     @Column(name = "clinvar_id")

@@ -24,7 +24,7 @@ public interface PatientRepository extends JpaRepository<Patient, Long> {
     List<Patient> findByVariantInGene(String geneSymbol);
     
     // Find patients by age range
-    @Query("SELECT p FROM Patient p WHERE FUNCTION('YEAR', CURRENT_DATE) - FUNCTION('YEAR', p.dateOfBirth) BETWEEN :minAge AND :maxAge")
+    @Query(value = "SELECT * FROM patient p WHERE EXTRACT(YEAR FROM AGE(CURRENT_DATE, p.date_of_birth)) BETWEEN :minAge AND :maxAge", nativeQuery = true)
     List<Patient> findByAgeRange(@Param("minAge") int minAge, @Param("maxAge") int maxAge);
     
     // Find patients by name (case insensitive)

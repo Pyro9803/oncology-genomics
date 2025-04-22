@@ -30,10 +30,15 @@ public class GatkConfig {
     }
     
     /**
-     * Configure ObjectMapper for JSON processing
+     * Configure ObjectMapper for JSON processing with Java 8 date/time support
      */
     @Bean
     public ObjectMapper objectMapper() {
-        return new ObjectMapper();
+        ObjectMapper objectMapper = new ObjectMapper();
+        // Register JavaTimeModule for handling Java 8 date/time types (LocalDate, LocalDateTime, etc.)
+        objectMapper.registerModule(new com.fasterxml.jackson.datatype.jsr310.JavaTimeModule());
+        // Configure to not write dates as timestamps (use ISO-8601 format instead)
+        objectMapper.disable(com.fasterxml.jackson.databind.SerializationFeature.WRITE_DATES_AS_TIMESTAMPS);
+        return objectMapper;
     }
 }

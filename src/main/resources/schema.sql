@@ -163,20 +163,69 @@ CREATE TABLE IF NOT EXISTS therapy_recommendation (
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
--- Follow-up records
-CREATE TABLE IF NOT EXISTS follow_up (
-    followup_id SERIAL PRIMARY KEY,
+-- Patient follow-up records
+CREATE TABLE IF NOT EXISTS patient_follow_ups (
+    follow_up_id SERIAL PRIMARY KEY,
     patient_id INT NOT NULL REFERENCES patient(patient_id) ON DELETE CASCADE,
-    followup_date DATE NOT NULL,
     therapy_id INT REFERENCES therapy_recommendation(therapy_id),
-    therapy_started_date DATE,
-    therapy_ended_date DATE,
-    response_status VARCHAR(50), -- CR, PR, SD, PD (complete/partial response, stable/progressive disease)
-    toxicity_grade VARCHAR(20),
-    toxicity_description TEXT,
-    disease_status VARCHAR(50), -- NED, AWD, DOD (no evidence, alive with, died of disease)
-    notes TEXT,
-    next_followup_date DATE,
+    follow_up_date DATE NOT NULL,
+    clinical_status VARCHAR(50) NOT NULL, -- IMPROVED, STABLE, PROGRESSED, RECURRED
+    response_assessment VARCHAR(50), -- COMPLETE_RESPONSE, PARTIAL_RESPONSE, STABLE_DISEASE, PROGRESSIVE_DISEASE
+    imaging_results TEXT,
+    laboratory_results TEXT,
+    tumor_size_change DECIMAL(8,2), -- Percentage change, negative for shrinkage
+    adverse_events TEXT,
+    performance_status VARCHAR(50), -- ECOG or Karnofsky score
+    quality_of_life TEXT,
+    clinical_notes TEXT,
+    requires_new_biopsy BOOLEAN DEFAULT FALSE,
+    requires_new_sequencing BOOLEAN DEFAULT FALSE,
+    recorded_by VARCHAR(100) NOT NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+-- Clinical reports
+CREATE TABLE IF NOT EXISTS clinical_report (
+    report_id SERIAL PRIMARY KEY,
+    patient_id INT NOT NULL REFERENCES patient(patient_id) ON DELETE CASCADE,
+    sample_id INT NOT NULL REFERENCES sample(sample_id),
+    variant_calling_id INT NOT NULL REFERENCES variant_calling(variant_calling_id),
+    report_title VARCHAR(200) NOT NULL,
+    report_summary TEXT,
+    test_methodology TEXT,
+    sequencing_details TEXT,
+    bioinformatics_pipeline TEXT,
+    quality_metrics TEXT,
+    limitations TEXT,
+    recommendations TEXT,
+    additional_notes TEXT,
+    report_status VARCHAR(50) NOT NULL, -- DRAFT, REVIEW, APPROVED, FINALIZED
+    report_version INT DEFAULT 1,
+    pdf_path VARCHAR(255),
+    created_by VARCHAR(100) NOT NULL,
+    reviewed_by VARCHAR(100),
+    approved_by VARCHAR(100),
+    finalized_by VARCHAR(100),
+    review_date TIMESTAMP,
+    approval_date TIMESTAMP,
+    finalization_date TIMESTAMP,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+-- Report comments
+CREATE TABLE IF NOT EXISTS report_comment (
+    comment_id SERIAL PRIMARY KEY,
+    report_id INT NOT NULL REFERENCES clinical_report(report_id) ON DELETE CASCADE,
+    comment_text TEXT NOT NULL,
+    comment_section VARCHAR(100),
+    comment_type VARCHAR(50), -- SUGGESTION, CORRECTION, QUESTION
+    commented_by VARCHAR(100) NOT NULL,
+    resolved BOOLEAN DEFAULT FALSE,
+    resolved_by VARCHAR(100),
+    resolution_date TIMESTAMP,
+    resolution_notes TEXT,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
@@ -187,4 +236,6 @@ CREATE INDEX idx_sample_patient ON sample(patient_id);
 CREATE INDEX idx_variant_gene ON somatic_variant(gene_symbol);
 CREATE INDEX idx_variant_chromosome_position ON somatic_variant(chromosome, position);
 CREATE INDEX idx_variant_calling_status ON variant_calling(status);
-CREATE INDEX idx_followup_patient ON follow_up(patient_id);
+CREATE INDEX idx_followup_patient ON patient_follow_ups(patient_id);
+CREATE INDEX idx_clinical_report_patient ON clinical_report(patient_id);
+CREATE INDEX idx_report_comment_report ON report_comment(report_id);

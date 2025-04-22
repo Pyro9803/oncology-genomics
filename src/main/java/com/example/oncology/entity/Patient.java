@@ -1,5 +1,6 @@
 package com.example.oncology.entity;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import lombok.Data;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
@@ -54,6 +55,7 @@ public class Patient {
     
     // Relationships
     @OneToMany(mappedBy = "patient", cascade = CascadeType.ALL, orphanRemoval = true)
+    @JsonManagedReference
     private List<Diagnosis> diagnoses = new ArrayList<>();
     
     @OneToMany(mappedBy = "patient", cascade = CascadeType.ALL, orphanRemoval = true)

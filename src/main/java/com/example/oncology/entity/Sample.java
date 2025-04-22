@@ -1,5 +1,7 @@
 package com.example.oncology.entity;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import lombok.Data;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
@@ -23,10 +25,12 @@ public class Sample {
     
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "patient_id", nullable = false)
+    @JsonBackReference
     private Patient patient;
     
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "diagnosis_id")
+    @JsonBackReference
     private Diagnosis diagnosis;
     
     @Column(name = "sample_type", nullable = false)
@@ -38,10 +42,10 @@ public class Sample {
     @Column(name = "collection_date", nullable = false)
     private LocalDate collectionDate;
     
-    @Column(name = "tumor_purity", precision = 5, scale = 2)
+    @Column(name = "tumor_purity", columnDefinition = "NUMERIC(5,2)")
     private BigDecimal tumorPurity;
     
-    @Column(name = "sample_quality_score", precision = 5, scale = 2)
+    @Column(name = "sample_quality_score", columnDefinition = "NUMERIC(5,2)")
     private BigDecimal sampleQualityScore;
     
     @Column(name = "storage_location")
@@ -60,7 +64,12 @@ public class Sample {
     
     // Relationships
     @OneToMany(mappedBy = "sample", cascade = CascadeType.ALL, orphanRemoval = true)
+    @JsonManagedReference
     private List<SequencingData> sequencingData = new ArrayList<>();
+    
+    @OneToMany(mappedBy = "sample", cascade = CascadeType.ALL)
+    @JsonManagedReference
+    private List<NucleicAcidExtraction> nucleicAcidExtractions = new ArrayList<>();
     
     @OneToMany(mappedBy = "tumorSample", cascade = CascadeType.ALL)
     private List<VariantCalling> tumorVariantCallings = new ArrayList<>();
