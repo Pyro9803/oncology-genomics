@@ -11,7 +11,7 @@ import org.springframework.web.bind.annotation.*;
  * REST controller for GATK analysis operations
  */
 @RestController
-@RequestMapping("/api/analysis")
+@RequestMapping("/analysis")
 @RequiredArgsConstructor
 public class GatkAnalysisController {
 

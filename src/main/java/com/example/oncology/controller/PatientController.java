@@ -17,7 +17,7 @@ import java.util.List;
  * REST controller for patient operations
  */
 @RestController
-@RequestMapping("/api/patients")
+@RequestMapping("/patients")
 @RequiredArgsConstructor
 public class PatientController {
 

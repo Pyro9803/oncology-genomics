@@ -14,7 +14,7 @@ import java.util.List;
  * REST controller for patient follow-up operations
  */
 @RestController
-@RequestMapping("/api/follow-up")
+@RequestMapping("/follow-up")
 @RequiredArgsConstructor
 public class FollowUpController {
 

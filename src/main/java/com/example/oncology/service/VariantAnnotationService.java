@@ -3,7 +3,6 @@ package com.example.oncology.service;
 import com.example.oncology.entity.SomaticVariant;
 import com.example.oncology.entity.VariantAnnotation;
 import com.example.oncology.entity.VariantCalling;
-import com.example.oncology.repository.SomaticVariantRepository;
 import com.example.oncology.repository.VariantAnnotationRepository;
 import com.example.oncology.repository.VariantCallingRepository;
 import lombok.extern.slf4j.Slf4j;
@@ -27,9 +26,6 @@ public class VariantAnnotationService {
     
     @Autowired
     private VariantCallingRepository variantCallingRepository;
-    
-    @Autowired
-    private SomaticVariantRepository somaticVariantRepository;
     
     @Autowired
     private VariantAnnotationRepository variantAnnotationRepository;

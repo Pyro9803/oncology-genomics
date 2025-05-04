@@ -14,6 +14,7 @@ RUN apt-get update && apt-get install -y \
     liblzma-dev \
     libcurl4-openssl-dev \
     libssl-dev \
+    jq \
     && rm -rf /var/lib/apt/lists/*
 
 # Install Python packages for variant processing
